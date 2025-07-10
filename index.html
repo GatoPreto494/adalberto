@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menu de Produtos</title>
+    <style>
+        body {            font-family: Arial, sans-serif;            margin: 0;            padding: 0;            background-color: #f4f4f4;            color: #333;        }        .container {            width: 90%;            max-width: 800px;            margin: 20px auto;            background-color: #fff;            padding: 20px;            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);            border-radius: 8px;        }        header {            display: flex;            justify-content: space-between;            align-items: center;            padding-bottom: 15px;            border-bottom: 1px solid #eee;            margin-bottom: 20px;        }        h1 {            color: #007bff;            margin: 0;        }        .cart-icon {            font-size: 24px;            cursor: pointer;            position: relative;        }        .cart-count {            background-color: #dc3545;            color: #fff;            border-radius: 50%;            padding: 3px 8px;            font-size: 12px;            position: absolute;            top: -10px;            right: -10px;        }        .product-list {            list-style: none;            padding: 0;        }        .product-item {            display: flex;            justify-content: space-between;            align-items: center;            padding: 10px 0;            border-bottom: 1px dashed #eee;        }        .product-item:last-child {            border-bottom: none;        }        .product-info {            flex-grow: 1;        }        .product-info h3 {            margin: 0 0 5px 0;            color: #555;        }        .product-info p {            margin: 0;            font-size: 0.9em;            color: #777;        }        .product-price {            font-weight: bold;            color: #007bff;            width: 80px;            text-align: right;            margin-right: 15px;        }        .quantity-control {            display: flex;            align-items: center;        }        .quantity-control button {            background-color: #007bff;            color: #fff;            border: none;            padding: 5px 10px;            cursor: pointer;            border-radius: 4px;            font-size: 1em;            margin: 0 5px;        }        .quantity-control button:hover {            background-color: #0056b3;        }        .quantity-input {            width: 40px;            text-align: center;            border: 1px solid #ccc;            border-radius: 4px;            padding: 5px 0;            -moz-appearance: textfield; /* Remove number input arrows for Firefox */        }        .quantity-input::-webkit-outer-spin-button,        .quantity-input::-webkit-inner-spin-button {            -webkit-appearance: none;            margin: 0;        }        .cart-summary {            background-color: #e9ecef;            padding: 15px;            margin-top: 20px;            border-radius: 8px;        }        .cart-summary h2 {            margin-top: 0;            color: #333;        }        .cart-items-summary {            list-style: none;            padding: 0;        }        .cart-items-summary li {            display: flex;            justify-content: space-between;            padding: 5px 0;            border-bottom: 1px dashed #ced4da;        }        .cart-items-summary li:last-child {            border-bottom: none;        }        .cart-total {            font-size: 1.2em;            font-weight: bold;            text-align: right;            margin-top: 10px;            color: #007bff;        }        .whatsapp-button {            background-color: #28a745;            color: #fff;            border: none;            padding: 15px 20px;            font-size: 1.2em;            border-radius: 8px;            cursor: pointer;            width: 100%;            margin-top: 20px;            display: flex;            align-items: center;            justify-content: center;            gap: 10px;        }        .whatsapp-button:hover {            background-color: #218838;        }        .settings-icon {            font-size: 28px;            cursor: pointer;            margin-top: 30px;            display: block;            text-align: center;            color: #6c757d;        }        .settings-icon:hover {            color: #495057;        }        .admin-section {            display: none; /* Hidden by default */            background-color: #f8f9fa;            padding: 20px;            margin-top: 20px;            border-radius: 8px;            border: 1px solid #e2e6ea;        }        .admin-section h2 {            color: #007bff;            margin-top: 0;        }        .admin-section label {            display: block;            margin-bottom: 5px;            font-weight: bold;        }        .admin-section input[type="text"],        .admin-section input[type="number"],        .admin-section textarea,
+        .admin-section input[type="password"] {            width: calc(100% - 22px);            padding: 10px;            margin-bottom: 15px;            border: 1px solid #ccc;            border-radius: 4px;        }        .admin-section button {            background-color: #17a2b8;            color: #fff;            border: none;            padding: 10px 15px;            border-radius: 4px;            cursor: pointer;            font-size: 1em;            margin-right: 10px; /* Space between buttons */        }        .admin-section button:last-of-type {            margin-right: 0;        }        .admin-section button:hover {            background-color: #138496;        }        .admin-section #whatsappNumberInput {            width: calc(100% - 22px);        }        .admin-section .item-editor {            background-color: #e9ecef;            padding: 15px;            margin-bottom: 15px;            border-radius: 5px;            border: 1px solid #ced4da;        }        .admin-section .item-editor button {            margin-left: 10px;        }        .welcome-message {            background-color: #d1ecf1;            color: #0c5460;            padding: 15px;            margin-bottom: 20px;            border: 1px solid #bee5eb;            border-radius: 8px;            text-align: center;            font-size: 1.1em;        }        .highlight-text {            font-weight: bold;            color: #007bff;        }        #passwordPrompt {            display: none;            padding: 20px;            background-color: #fff3cd;            border: 1px solid #ffeeba;            border-radius: 8px;            text-align: center;            margin-top: 20px;        }        .share-info {            background-color: #f0f8ff;            color: #103c5f;            padding: 15px;            margin-top: 20px;            border: 1px solid #cce5ff;            border-radius: 8px;            font-size: 0.95em;        }        .share-info p {            margin: 0 0 10px 0;        }        .share-info button {            background-color: #28a745;            color: #fff;            border: none;            padding: 10px 15px;            border-radius: 4px;            cursor: pointer;            font-size: 1em;            margin-top: 5px;        }        .share-info button:hover {            background-color: #218838;        }    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Faça seu Pedido</h1>
+            <div class="cart-icon" onclick="toggleCartSummary()">
+                🛒 <span class="cart-count" id="cartCount">0</span>
+            </div>
+        </header>
+
+        <div class="welcome-message">
+            Bem-vindo! Escolha seus produtos e quantidades. Você pode usar os botões <span class="highlight-text">+/-</span> ou <span class="highlight-text">digitar a quantidade</span> diretamente na caixa.
+        </div>
+
+        <ul class="product-list" id="productList">
+            </ul>
+
+        <div class="cart-summary" id="cartSummary" style="display: none;">
+            <h2>Seu Carrinho</h2>
+            <ul class="cart-items-summary" id="cartItemsSummary">
+                </ul>
+            <div class="cart-total" id="cartTotal">Total: R$ 0,00</div>
+            <button class="whatsapp-button" onclick="sendOrderViaWhatsApp()">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp Icon" style="width: 24px; height: 24px;"> Enviar Pedido via WhatsApp
+            </button>
+        </div>
+
+        <div class="settings-icon" onclick="showPasswordPrompt()">⚙️</div>
+
+        <div id="passwordPrompt">
+            <label for="adminPassword">Senha do Administrador:</label>
+            <input type="password" id="adminPassword" placeholder="Digite a senha">
+            <button onclick="checkPassword()">Entrar</button>
+            <p style="color:red; display:none;" id="passwordError">Senha incorreta!</p>
+        </div>
+
+        <div class="admin-section" id="adminSection">
+            <h2>Configurações do Administrador</h2>
+            <div class="share-info">
+                <p>As modificações feitas aqui serão **salvas diretamente na sua planilha Google Sheets** e estarão visíveis para todos que acessarem esta página.</p>
+                <p>Certifique-se de que o **ID da planilha** e o **nome da aba** no código JavaScript estão corretos.</p>
+                <button onclick="copyCurrentPageURL()">Copiar Link da Página (se online)</button>
+            </div>
+
+            <label for="whatsappNumberInput">Número do WhatsApp:</label>
+            <input type="text" id="whatsappNumberInput" value="5511947406124" placeholder="Ex: 5511987654321">
+            <button onclick="saveWhatsappNumber()">Salvar Número</button>
+
+            <h3>Gerenciar Itens</h3>
+            <div id="itemEditorList">
+                </div>
+            <button onclick="addItem()">Adicionar Novo Item</button>
+            <button onclick="saveItems()">Salvar Itens na Planilha</button>
+        </div>
+    </div>
+
+    <script>
+        // <<<<<<< URL DO SEU WEB APP DO GOOGLE APPS SCRIPT >>>>>>>
+        const GOOGLE_SHEETS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycby1vGDD9ujZXi5mFO4SmLeh5zup7BnJqSA8lfeaqGoLh8d4gfthwXeMOI6RqhbXrqd5/exec';
+        const ADMIN_PASSWORD = "6124"; // Senha para acesso à área de administração
+
+        let products = []; // Agora, os produtos serão carregados do Google Sheets
+        let cart = {};
+        let whatsappNumber = "5511947406124"; // Default WhatsApp number
+
+        // Carrega os dados quando a página é carregada
+        document.addEventListener('DOMContentLoaded', async () => {
+            await loadProductsFromSheet(); // Carrega produtos do Sheets
+            const storedWhatsappNumber = localStorage.getItem('whatsappNumber');
+            if (storedWhatsappNumber) {
+                whatsappNumber = storedWhatsappNumber;
+                document.getElementById('whatsappNumberInput').value = whatsappNumber;
+            }
+            renderProducts();
+            updateCartSummary();
+        });
+
+        // --- Funções de Interação com o Google Sheets ---
+
+        async function loadProductsFromSheet() {
+            try {
+                const response = await fetch(GOOGLE_SHEETS_WEB_APP_URL);
+                if (!response.ok) {
+                    throw new Error(`Erro ao carregar produtos: ${response.statusText}`);
+                }
+                const data = await response.json();
+                products = data;
+                // Encontra o próximo ID disponível para novos itens
+                nextId = products.length > 0 ? Math.max(...products.map(p => p.id)) + 1 : 1;
+                console.log("Produtos carregados do Google Sheets:", products);
+            } catch (error) {
+                console.error("Falha ao carregar produtos do Google Sheets:", error);
+                alert("Erro ao carregar produtos. Verifique o console para detalhes.");
+                // Se falhar, podemos tentar carregar do localStorage como fallback, ou deixar vazio
+                const storedProducts = localStorage.getItem('products');
+                if (storedProducts) {
+                    products = JSON.parse(storedProducts);
+                    nextId = products.length > 0 ? Math.max(...products.map(p => p.id)) + 1 : 1;
+                    console.warn("Carregando produtos do LocalStorage como fallback.");
+                } else {
+                    products = [];
+                    nextId = 1;
+                }
+            }
+        }
+
+        async function saveProductsToSheet() {
+            try {
+                const response = await fetch(GOOGLE_SHEETS_WEB_APP_URL, {
+                    method: 'POST',
+                    mode: 'no-cors', // Necessário para evitar erro CORS no front-end, mas Apps Script precisa do setVastForServiceRequest(true)
+                    cache: 'no-cache',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ action: 'saveItems', data: products })
+                });
+
+                // No-cors mode não permite ler a resposta, então confiaremos no status 200 implícito ou erros de rede
+                console.log("Solicitação de salvamento enviada ao Google Sheets.");
+                alert("Itens salvos na planilha Google Sheets!"); // Avisamos o usuário
+                // O ideal aqui seria ter uma resposta do Apps Script para confirmar
+                // Mas com 'no-cors', isso não é possível.
+                // Se a requisição HTTP for bem-sucedida, assumimos que o Apps Script funcionou.
+
+                // Depois de salvar, recarregamos os produtos para ter certeza que os IDs e dados estão sincronizados,
+                // especialmente se o Apps Script estiver gerando IDs ou processando dados.
+                await loadProductsFromSheet();
+                renderProducts(); // Re-renderiza a lista de produtos
+                updateCartSummary(); // Atualiza o carrinho em caso de mudança de preço
+                renderAdminItems(); // Re-renderiza a área de admin
+            } catch (error) {
+                console.error("Falha ao salvar produtos no Google Sheets:", error);
+                alert("Erro ao salvar itens na planilha. Verifique o console para detalhes.");
+            }
+        }
+
+        async function deleteItemFromSheet(id) {
+            try {
+                const response = await fetch(GOOGLE_SHEETS_WEB_APP_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    cache: 'no-cache',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ action: 'deleteItem', data: { id: id } })
+                });
+
+                console.log(`Solicitação de exclusão para ID ${id} enviada.`);
+                // Após a exclusão, recarregamos a lista para ter certeza de que está sincronizada
+                await loadProductsFromSheet();
+                renderAdminItems();
+                renderProducts();
+                updateCartSummary();
+            } catch (error) {
+                console.error(`Falha ao excluir item com ID ${id} do Google Sheets:`, error);
+                alert("Erro ao excluir item da planilha. Verifique o console para detalhes.");
+            }
+        }
+
+
+        // --- Funções Existentes (algumas modificadas) ---
+
+        function renderProducts() {
+            const productList = document.getElementById('productList');
+            productList.innerHTML = ''; // Clear existing list
+            products.forEach(product => {
+                const li = document.createElement('li');
+                li.className = 'product-item';
+                li.innerHTML = `
+                    <div class="product-info">
+                        <h3>${product.name}</h3>
+                        ${product.description ? `<p>${product.description}</p>` : ''}
+                    </div>
+                    <div class="product-price">R$ ${product.price.toFixed(2).replace('.', ',')}</div>
+                    <div class="quantity-control">
+                        <button onclick="updateQuantity(${product.id}, -1)">-</button>
+                        <input type="number" class="quantity-input" id="quantity-${product.id}" value="${cart[product.id] ? cart[product.id].quantity : 0}"
+                               placeholder="Qtd" onchange="manualQuantityChange(${product.id}, this.value)" min="0">
+                        <button onclick="updateQuantity(${product.id}, 1)">+</button>
+                    </div>
+                `;
+                productList.appendChild(li);
+            });
+        }
+
+        function updateQuantity(productId, change) {
+            const product = products.find(p => p.id === productId);
+            if (!product) return;
+
+            if (!cart[productId]) {
+                cart[productId] = { ...product, quantity: 0 };
+            }
+
+            cart[productId].quantity += change;
+
+            if (cart[productId].quantity < 0) {
+                cart[productId].quantity = 0;
+            }
+
+            document.getElementById(`quantity-${productId}`).value = cart[productId].quantity;
+            updateCartSummary();
+        }
+
+        function manualQuantityChange(productId, value) {
+            const quantity = parseInt(value);
+            const product = products.find(p => p.id === productId);
+            if (!product) return;
+
+            if (isNaN(quantity) || quantity < 0) {
+                document.getElementById(`quantity-${productId}`).value = cart[productId] ? cart[productId].quantity : 0;
+                return;
+            }
+
+            if (!cart[productId]) {
+                cart[productId] = { ...product, quantity: 0 };
+            }
+            cart[productId].quantity = quantity;
+            updateCartSummary();
+        }
+
+        function updateCartSummary() {
+            const cartItemsSummary = document.getElementById('cartItemsSummary');
+            const cartTotalElement = document.getElementById('cartTotal');
+            const cartCountElement = document.getElementById('cartCount');
+            let total = 0;
+            let totalItems = 0;
+
+            cartItemsSummary.innerHTML = ''; // Clear existing summary
+            for (const productId in cart) {
+                const item = cart[productId];
+                if (item.quantity > 0) {
+                    const itemTotal = item.quantity * item.price;
+                    total += itemTotal;
+                    totalItems += item.quantity;
+
+                    const li = document.createElement('li');
+                    li.innerHTML = `
+                        <span>${item.name} (${item.quantity}x)</span>
+                        <span>R$ ${itemTotal.toFixed(2).replace('.', ',')}</span>
+                    `;
+                    cartItemsSummary.appendChild(li);
+                }
+            }
+
+            cartTotalElement.textContent = `Total: R$ ${total.toFixed(2).replace('.', ',')}`;
+            cartCountElement.textContent = totalItems;
+
+            if (totalItems > 0) {
+                document.getElementById('cartSummary').style.display = 'block';
+            } else {
+                document.getElementById('cartSummary').style.display = 'none';
+            }
+        }
+
+        function toggleCartSummary() {
+            const cartSummary = document.getElementById('cartSummary');
+            cartSummary.style.display = cartSummary.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function sendOrderViaWhatsApp() {
+            let orderMessage = "Olá! Gostaria de fazer o seguinte pedido:\n\n";
+            let totalOrder = 0;
+
+            for (const productId in cart) {
+                const item = cart[productId];
+                if (item.quantity > 0) {
+                    const itemTotal = item.quantity * item.price;
+                    orderMessage += `${item.name} - ${item.quantity}x - R$ ${itemTotal.toFixed(2).replace('.', ',')}\n`;
+                    totalOrder += itemTotal;
+                }
+            }
+
+            if (totalOrder === 0) {
+                alert("Seu carrinho está vazio. Adicione itens antes de enviar o pedido.");
+                return;
+            }
+
+            orderMessage += `\nTotal do Pedido: R$ ${totalOrder.toFixed(2).replace('.', ',')}`;
+
+            const encodedMessage = encodeURIComponent(orderMessage);
+            const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodedMessage}`;
+            window.open(whatsappUrl, '_blank');
+
+            // Optionally, clear the cart after sending the order
+            cart = {};
+            renderProducts();
+            updateCartSummary();
+            alert("Seu pedido foi enviado para o WhatsApp!");
+        }
+
+        function showPasswordPrompt() {
+            document.getElementById('passwordPrompt').style.display = 'block';
+            document.getElementById('adminSection').style.display = 'none';
+            document.getElementById('adminPassword').value = ''; // Clear previous input
+            document.getElementById('passwordError').style.display = 'none';
+        }
+
+        async function checkPassword() {
+            const enteredPassword = document.getElementById('adminPassword').value;
+            if (enteredPassword === ADMIN_PASSWORD) {
+                document.getElementById('passwordPrompt').style.display = 'none';
+                document.getElementById('adminSection').style.display = 'block';
+                await loadProductsFromSheet(); // Garante que os produtos mais recentes são carregados antes de editar
+                renderAdminItems(); // Render admin items only after successful login
+            } else {
+                document.getElementById('passwordError').style.display = 'block';
+            }
+        }
+
+        function saveWhatsappNumber() {
+            const newNumber = document.getElementById('whatsappNumberInput').value;
+            whatsappNumber = newNumber;
+            localStorage.setItem('whatsappNumber', whatsappNumber);
+            alert("Número do WhatsApp salvo!");
+        }
+
+        let nextId = 1; // Será atualizado ao carregar os produtos
+
+        function renderAdminItems() {
+            const itemEditorList = document.getElementById('itemEditorList');
+            itemEditorList.innerHTML = '';
+            products.forEach(product => {
+                const div = document.createElement('div');
+                div.className = 'item-editor';
+                div.innerHTML = `
+                    <label for="adminName-${product.id}">Nome:</label>
+                    <input type="text" id="adminName-${product.id}" value="${product.name}" onchange="updateProductInAdmin(${product.id}, 'name', this.value)">
+                    <label for="adminDescription-${product.id}">Descrição (opcional):</label>
+                    <textarea id="adminDescription-${product.id}" rows="2" onchange="updateProductInAdmin(${product.id}, 'description', this.value)">${product.description || ''}</textarea>
+                    <label for="adminPrice-${product.id}">Preço:</label>
+                    <input type="number" id="adminPrice-${product.id}" step="0.01" value="${product.price}" onchange="updateProductInAdmin(${product.id}, 'price', parseFloat(this.value))">
+                    <button onclick="deleteItem(${product.id})">Remover</button>
+                `;
+                itemEditorList.appendChild(div);
+            });
+        }
+
+        function updateProductInAdmin(id, field, value) {
+            const productIndex = products.findIndex(p => p.id === id);
+            if (productIndex > -1) {
+                products[productIndex][field] = value;
+            }
+            // Não salva automaticamente no sheets aqui, só quando clicar no botão "Salvar Itens"
+        }
+
+        function addItem() {
+            const newItem = {
+                id: nextId++,
+                name: "Novo Produto",
+                description: "",
+                price: 0.00
+            };
+            products.push(newItem);
+            renderAdminItems();
+            renderProducts(); // Update customer view immediately
+        }
+
+        async function deleteItem(id) {
+            // Remove do array local
+            products = products.filter(p => p.id !== id);
+            // Também remove do carrinho se estiver lá
+            if (cart[id]) {
+                delete cart[id];
+                updateCartSummary();
+            }
+            renderAdminItems();
+            renderProducts();
+            // E agora, tenta remover da planilha
+            await deleteItemFromSheet(id);
+        }
+
+        // Esta função agora chama saveProductsToSheet
+        function saveItems() {
+            saveProductsToSheet();
+        }
+
+        function copyCurrentPageURL() {
+            const currentURL = window.location.href;
+            navigator.clipboard.writeText(currentURL).then(() => {
+                alert('Link da página copiado! Cole-o para compartilhar.');
+            }).catch(err => {
+                console.error('Erro ao copiar o link: ', err);
+                prompt("Copie este link para compartilhar a página:", currentURL);
+            });
+        }
+    </script>
+</body>
+</html>
