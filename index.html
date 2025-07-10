@@ -65,7 +65,7 @@
 
     <script>
         // <<<<<<< URL DO SEU WEB APP DO GOOGLE APPS SCRIPT >>>>>>>
-        const GOOGLE_SHEETS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzCgCSHR7F0xgdhoBzL1jdf_32E18tjtYjzI2rcX9OeCSY5TsN-WFvF1lJzBCgCEPd_/exec';
+        const GOOGLE_SHEETS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbyjTsvU9MWezMzVd1K-x1cYMP7NkkM06AND5hXwqh3uYKgkDLsZ3Pc2qBlLnnoxYHme/exec';
         const ADMIN_PASSWORD = "6124"; // Senha para acesso à área de administração
 
         let products = []; // Agora, os produtos serão carregados do Google Sheets
@@ -90,16 +90,24 @@
             try {
                 const response = await fetch(GOOGLE_SHEETS_WEB_APP_URL);
                 if (!response.ok) {
-                    throw new Error(`Erro ao carregar produtos: ${response.statusText}`);
+                    // Tenta ler a resposta para pegar o erro detalhado do Apps Script
+                    const errorResponse = await response.json().catch(() => ({ message: 'Erro desconhecido ao carregar produtos (sem JSON de erro).' }));
+                    throw new Error(`Erro de rede ou Apps Script: ${response.status} ${response.statusText}. Detalhes: ${errorResponse.message || 'Nenhum detalhe adicional.'}`);
                 }
                 const data = await response.json();
+
+                // Verifica se a resposta contém um status de erro do Apps Script
+                if (data.status === 'error') {
+                    throw new Error(data.message); // Lança o erro detalhado do Apps Script
+                }
+
                 products = data;
                 // Encontra o próximo ID disponível para novos itens
                 nextId = products.length > 0 ? Math.max(...products.map(p => p.id)) + 1 : 1;
                 console.log("Produtos carregados do Google Sheets:", products);
             } catch (error) {
                 console.error("Falha ao carregar produtos do Google Sheets:", error);
-                alert("Erro ao carregar produtos. Verifique o console para detalhes.");
+                alert("Erro ao carregar produtos. Verifique o console para detalhes: " + error.message);
                 // Se falhar, podemos tentar carregar do localStorage como fallback, ou deixar vazio
                 const storedProducts = localStorage.getItem('products');
                 if (storedProducts) {
@@ -140,7 +148,7 @@
                 renderAdminItems(); // Re-renderiza a área de admin
             } catch (error) {
                 console.error("Falha ao salvar produtos no Google Sheets:", error);
-                alert("Erro ao salvar itens na planilha. Verifique o console para detalhes.");
+                alert("Erro ao salvar itens na planilha. Verifique o console para detalhes: " + error.message);
             }
         }
 
@@ -164,7 +172,7 @@
                 updateCartSummary();
             } catch (error) {
                 console.error(`Falha ao excluir item com ID ${id} do Google Sheets:`, error);
-                alert("Erro ao excluir item da planilha. Verifique o console para detalhes.");
+                alert("Erro ao excluir item da planilha. Verifique o console para detalhes: " + error.message);
             }
         }
 
