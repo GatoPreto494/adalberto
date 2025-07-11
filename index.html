@@ -20,10 +20,10 @@
             padding: 20px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             border-radius: 8px;
-            display: flex; /* Adicionado para flexbox */
-            flex-direction: column; /* Colunas */
+            display: flex;
+            flex-direction: column;
             height: calc(100vh - 40px); /* Altura total da tela menos margem */
-            overflow: hidden; /* Garante que o container principal não role */
+            overflow: hidden;
         }
         header {
             display: flex;
@@ -32,7 +32,7 @@
             padding-bottom: 15px;
             border-bottom: 1px solid #eee;
             margin-bottom: 20px;
-            flex-shrink: 0; /* Impede o cabeçalho de encolher */
+            flex-shrink: 0;
         }
         h1 {
             color: #007bff;
@@ -56,7 +56,7 @@
         .product-list {
             list-style: none;
             padding: 0;
-            margin: 0; /* Remove margem padrão da lista */
+            margin: 0;
         }
         .product-item {
             display: flex;
@@ -71,7 +71,7 @@
         .product-info {
             flex-grow: 1;
             min-width: 150px;
-            margin-right: 10px; /* Espaço entre info e preço/controle */
+            margin-right: 10px;
         }
         .product-info h3 {
             margin: 0 0 5px 0;
@@ -126,7 +126,7 @@
             padding: 15px;
             margin-top: 20px;
             border-radius: 8px;
-            flex-shrink: 0; /* Impede o carrinho de encolher */
+            flex-shrink: 0;
         }
         .cart-summary h2 {
             margin-top: 0;
@@ -179,8 +179,24 @@
             border-radius: 8px;
             text-align: center;
             font-size: 1.1em;
-            flex-shrink: 0; /* Impede a mensagem de encolher */
+            flex-shrink: 0;
+            transition: transform 0.3s ease-out, opacity 0.3s ease-out, margin-bottom 0.3s ease-out, padding 0.3s ease-out, height 0.3s ease-out;
+            transform: translateY(0);
+            opacity: 1;
+            pointer-events: auto;
+            height: auto; /* Altura automática inicialmente */
         }
+        .welcome-message.hidden-on-scroll {
+            transform: translateY(-100%);
+            opacity: 0;
+            pointer-events: none;
+            margin-bottom: 0;
+            padding-top: 0;
+            padding-bottom: 0;
+            height: 0;
+            overflow: hidden;
+        }
+
         .highlight-text {
             font-weight: bold;
             color: #007bff;
@@ -189,7 +205,7 @@
             margin-bottom: 20px;
             padding: 10px 0;
             border-bottom: 1px solid #eee;
-            flex-shrink: 0; /* Impede as opções de ordenação de encolher */
+            flex-shrink: 0;
         }
         .sort-options label {
             margin-right: 10px;
@@ -203,28 +219,26 @@
             font-size: 0.9em;
         }
 
-        /* Área de rolagem para a lista de produtos */
         .scrollable-product-area {
-            flex-grow: 1; /* Permite que essa área ocupe o espaço restante */
-            overflow-y: auto; /* Adiciona rolagem vertical quando o conteúdo excede */
-            padding-right: 10px; /* Para evitar que o texto fique colado na barra de rolagem */
-            margin-bottom: 20px; /* Espaço entre a lista e o carrinho */
+            flex-grow: 1;
+            overflow-y: auto;
+            padding-right: 10px;
+            margin-bottom: 20px;
         }
 
         /* Estilos para o Modal PIX */
         .modal {
-            display: none; /* Escondido por padrão */
-            position: fixed; /* Fica no lugar */
-            z-index: 10; /* Fica acima de tudo */
+            display: none;
+            position: fixed;
+            z-index: 10;
             left: 0;
             top: 0;
-            width: 100%; /* Largura total */
-            height: 100%; /* Altura total */
-            overflow: auto; /* Permite rolagem se o conteúdo for muito grande */
-            background-color: rgba(0,0,0,0.4); /* Fundo escuro semi-transparente */
-            display: flex; /* Usa flexbox para centralizar */
-            justify-content: center; /* Centraliza horizontalmente */
-            align-items: center; /* Centraliza verticalmente */
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+            justify-content: center;
+            align-items: center;
         }
 
         .modal-content {
@@ -233,7 +247,7 @@
             padding: 25px;
             border: 1px solid #888;
             width: 90%;
-            max-width: 500px; /* Largura máxima para o modal */
+            max-width: 500px;
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0,0,0,0.2);
             position: relative;
@@ -266,15 +280,15 @@
             justify-content: space-between;
             align-items: center;
             gap: 10px;
-            flex-wrap: wrap; /* Permite quebrar linha em telas menores */
+            flex-wrap: wrap;
         }
 
         .pix-key-display span {
             font-weight: bold;
             color: #333;
-            flex-grow: 1; /* Permite que a chave ocupe o espaço */
+            flex-grow: 1;
             text-align: left;
-            word-break: break-all; /* Quebra a palavra para chaves longas */
+            word-break: break-all;
         }
 
         .pix-key-display button {
@@ -285,7 +299,7 @@
             border-radius: 5px;
             cursor: pointer;
             font-size: 0.9em;
-            flex-shrink: 0; /* Impede o botão de encolher */
+            flex-shrink: 0;
         }
 
         .pix-key-display button:hover {
@@ -361,22 +375,47 @@
     </div>
 
     <script>
-        // <<<<<<< URL DO SEU WEB APP DO GOOGLE APPS SCRIPT >>>>>>>
         const GOOGLE_SHEETS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbyT5Lr_LdJzF7IvaNWuQb9pTpGkCjRio0bf5ZrBbJEXmHvdJvrjHBdvcDoYOXsXevl7/exec';
         
-        // <<< DEFINA SUA CHAVE PIX REAL AQUI >>>
-        const PIX_KEY = "sua_chave_pix_aqui_exemplo@email.com"; // Exemplo: 123.456.789-00 ou seuemail@email.com
-        // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+        const PIX_KEY = "sua_chave_pix_aqui_exemplo@email.com"; 
         
         let products = [];
         let cart = {};
         let whatsappNumber = "5511947406124"; 
 
+        const welcomeMessage = document.querySelector('.welcome-message');
+        const SCROLL_THRESHOLD = 80; 
+        let isWelcomeMessageHidden = false; 
+
+        function debounce(func, delay) {
+            let timeout;
+            return function(...args) {
+                const context = this;
+                clearTimeout(timeout);
+                timeout = setTimeout(() => func.apply(context, args), delay);
+            };
+        }
+
+        function handleScrollVisibility() {
+            const currentScrollY = document.querySelector('.scrollable-product-area').scrollTop; // Pega a rolagem da área específica
+
+            if (currentScrollY > SCROLL_THRESHOLD && !isWelcomeMessageHidden) {
+                welcomeMessage.classList.add('hidden-on-scroll');
+                isWelcomeMessageHidden = true;
+            } else if (currentScrollY <= SCROLL_THRESHOLD && isWelcomeMessageHidden) {
+                welcomeMessage.classList.remove('hidden-on-scroll');
+                isWelcomeMessageHidden = false;
+            }
+        }
+
+        // Adiciona o listener de rolagem à área específica
+        document.querySelector('.scrollable-product-area').addEventListener('scroll', debounce(handleScrollVisibility, 100));
+
+
         document.addEventListener('DOMContentLoaded', async () => {
             await loadProductsFromSheet(); 
             sortProducts('name-asc'); 
             updateCartSummary();
-            // Preenche a chave PIX no modal quando a página carrega
             document.getElementById('pixKey').textContent = PIX_KEY; 
         });
 
@@ -427,6 +466,8 @@
             products.forEach(product => {
                 const li = document.createElement('li');
                 li.className = 'product-item';
+                // O valor inicial do input de quantidade agora é vazio
+                const currentQuantity = cart[product.id] ? cart[product.id].quantity : ''; 
                 li.innerHTML = `
                     <div class="product-info">
                         <h3>${product.name}</h3>
@@ -435,7 +476,7 @@
                     <div class="product-price">R$ ${product.price.toFixed(2).replace('.', ',')}</div>
                     <div class="quantity-control">
                         <button onclick="updateQuantity(${product.id}, -1)">-</button>
-                        <input type="number" class="quantity-input" id="quantity-${product.id}" value="${cart[product.id] ? cart[product.id].quantity : 10}"
+                        <input type="number" class="quantity-input" id="quantity-${product.id}" value="${currentQuantity}"
                                placeholder="Qtd" onchange="manualQuantityChange(${product.id}, this.value)" min="10">
                         <button onclick="updateQuantity(${product.id}, 1)">+</button>
                     </div>
@@ -448,15 +489,15 @@
             const product = products.find(p => p.id === productId);
             if (!product) return;
 
-            if (!cart[productId]) {
+            // Se o produto não está no carrinho ou a quantidade é 0, inicializa com 10
+            if (!cart[productId] || cart[productId].quantity === 0) {
                 cart[productId] = { ...product, quantity: 10 };
+            } else {
+                cart[productId].quantity += change;
             }
 
-            if (change === -1 && cart[productId].quantity > 10) {
-                cart[productId].quantity += change;
-            } else if (change === 1) { 
-                cart[productId].quantity += change;
-            } else if (change === -1 && cart[productId].quantity === 10) {
+            // Garante que a quantidade não seja menor que 10
+            if (cart[productId].quantity < 10) {
                 cart[productId].quantity = 10;
             }
 
@@ -465,19 +506,20 @@
         }
 
         function manualQuantityChange(productId, value) {
-            const quantity = parseInt(value);
+            let quantity = parseInt(value);
             const product = products.find(p => p.id === productId);
             if (!product) return;
 
+            // Se o valor não é um número ou é menor que 10, define para 10
             if (isNaN(quantity) || quantity < 10) { 
-                document.getElementById(`quantity-${productId}`).value = cart[productId] ? Math.max(cart[productId].quantity, 10) : 10;
-                return;
+                quantity = 10;
             }
 
             if (!cart[productId]) {
                 cart[productId] = { ...product, quantity: 0 };
             }
             cart[productId].quantity = quantity;
+            document.getElementById(`quantity-${productId}`).value = cart[productId].quantity; // Atualiza o input para o valor corrigido
             updateCartSummary();
         }
 
@@ -491,7 +533,7 @@
             cartItemsSummary.innerHTML = '';
             for (const productId in cart) {
                 const item = cart[productId];
-                if (item.quantity > 0) {
+                if (item.quantity > 0) { // Apenas mostra itens com quantidade > 0
                     const itemTotal = item.quantity * item.price;
                     total += itemTotal;
                     totalItems += item.quantity;
@@ -520,14 +562,13 @@
             cartSummary.style.display = cartSummary.style.display === 'none' ? 'block' : 'none';
         }
 
-        // --- Novas Funções para o Modal PIX ---
         function showPixModal() {
             const totalOrder = calculateTotalOrder(); 
             if (totalOrder === 0) {
                 alert("Seu carrinho está vazio. Adicione itens antes de enviar o pedido.");
                 return;
             }
-            document.getElementById('pixModal').style.display = 'flex'; // Exibe o modal (usando flex para centralizar)
+            document.getElementById('pixModal').style.display = 'flex'; 
         }
 
         function closePixModal() {
@@ -544,11 +585,10 @@
         }
 
         function proceedToWhatsAppAfterPix() {
-            closePixModal(); // Fecha o modal
-            sendOrderViaWhatsApp(); // Prossegue com o envio do pedido para o WhatsApp
+            closePixModal(); 
+            sendOrderViaWhatsApp(); 
         }
 
-        // Helper function para calcular o total do pedido (reutilizável)
         function calculateTotalOrder() {
             let total = 0;
             for (const productId in cart) {
@@ -560,7 +600,7 @@
             return total;
         }
 
-        function sendOrderViaWhatsApp() { // Esta função é agora chamada por proceedToWhatsAppAfterPix()
+        function sendOrderViaWhatsApp() { 
             let orderMessage = "Olá! Gostaria de fazer o seguinte pedido:\n\n";
             let totalOrder = calculateTotalOrder(); 
 
@@ -573,7 +613,7 @@
             }
 
             orderMessage += `\nTotal do Pedido: R$ ${totalOrder.toFixed(2).replace('.', ',')}`;
-            orderMessage += `\n\n*Atenção:* O pagamento via PIX já foi informado. Por favor, envie o comprovante!`; // Adiciona nota sobre PIX
+            orderMessage += `\n\n*Atenção:* O pagamento via PIX já foi informado. Por favor, envie o comprovante!`; 
 
             const encodedMessage = encodeURIComponent(orderMessage);
             const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodedMessage}`;
