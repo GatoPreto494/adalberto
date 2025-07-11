@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Escolha seu Servidor Aqui</title>
+    <title>Menu de Produtos</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -368,7 +368,7 @@
             <h2>Pagamento PIX</h2>
             <p>Por favor, realize o pagamento via PIX. Copie a chave abaixo e envie o comprovante no WhatsApp.</p>
             <div class="pix-key-display">
-                <span id="pixKey">15998627702</span> <button onclick="copyPixKey()">Copiar PIX</button>
+                <span id="pixKey">SUA_CHAVE_PIX_AQUI</span> <button onclick="copyPixKey()">Copiar PIX</button>
             </div>
             <button class="proceed-to-whatsapp" onclick="proceedToWhatsAppAfterPix()">Prosseguir para o WhatsApp</button>
         </div>
@@ -377,11 +377,11 @@
     <script>
         const GOOGLE_SHEETS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbyT5Lr_LdJzF7IvaNWuQb9pTpGkCjRio0bf5ZrBbJEXmHvdJvrjHBdvcDoYOXsXevl7/exec';
         
-        const PIX_KEY = "15998627702"; 
+        const PIX_KEY = "sua_chave_pix_aqui_exemplo@email.com"; 
         
         let products = [];
         let cart = {};
-        let whatsappNumber = "551115998627702"; 
+        let whatsappNumber = "5511947406124"; 
 
         const welcomeMessage = document.querySelector('.welcome-message');
         const SCROLL_THRESHOLD = 80; 
@@ -465,8 +465,7 @@
             products.forEach(product => {
                 const li = document.createElement('li');
                 li.className = 'product-item';
-                // O valor inicial do input é a quantidade atual no carrinho, ou vazio (0) se não tiver no carrinho.
-                const currentQuantityInCart = cart[product.id] ? cart[product.id].quantity : '';
+                const currentQuantityInCart = cart[product.id] ? cart[product.id].quantity : ''; 
                 li.innerHTML = `
                     <div class="product-info">
                         <h3>${product.name}</h3>
@@ -488,7 +487,6 @@
             const product = products.find(p => p.id === productId);
             if (!product) return;
 
-            // Se o item não está no carrinho, inicializa com 0.
             if (!cart[productId]) {
                 cart[productId] = { ...product, quantity: 0 };
             }
@@ -502,8 +500,9 @@
                     cart[productId].quantity += 1; // Incrementa de 1 em 1
                 }
             } else if (change === -1) { // Botão de MENOS
-                if (currentQty <= 10 && currentQty > 0) { // Se está entre 1 e 10 (inclusive)
-                    cart[productId].quantity = 0; // Volta para 0
+                // Se a quantidade é 10 ou menos (mas maior que 0), vai para 0.
+                if (currentQty <= 10 && currentQty > 0) { 
+                    cart[productId].quantity = 0; 
                 } else if (currentQty > 10) { // Se está acima de 10, decrementa de 1 em 1
                     cart[productId].quantity -= 1;
                 } else { // Se já está em 0, permanece em 0
@@ -524,7 +523,7 @@
             if (isNaN(quantity) || quantity < 0) { 
                 quantity = 0;
             } else if (quantity > 0 && quantity < 10) { 
-                // Se digitou entre 1 e 9, força para 10 (conforme a regra de mínimo 10)
+                // Se digitou entre 1 e 9, força para 10
                 quantity = 10;
             }
 
@@ -626,7 +625,8 @@
             }
 
             orderMessage += `\nTotal do Pedido: R$ ${totalOrder.toFixed(2).replace('.', ',')}`;
-            orderMessage += `\n\n*Atenção:* O pagamento via PIX já foi informado. Por favor, envie o comprovante!`; 
+            // Adicionado a frase sobre o PIX do ponto de vista de quem está comprando
+            orderMessage += `\n\nEstou realizando o pagamento via PIX e em breve enviarei o comprovante!`; 
 
             const encodedMessage = encodeURIComponent(orderMessage);
             const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodedMessage}`;
@@ -635,7 +635,7 @@
             cart = {};
             renderProducts();
             updateCartSummary();
-            alert("Seu pedido foi enviado para o WhatsApp! Não esqueça de enviar o comprovante PIX.");
+            alert("Seu pedido foi enviado para o WhatsApp!"); 
         }
     </script>
 </body>
