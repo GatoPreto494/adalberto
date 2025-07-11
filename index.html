@@ -368,7 +368,7 @@
             <h2>Pagamento PIX</h2>
             <p>Por favor, realize o pagamento via PIX. Copie a chave abaixo e envie o comprovante no WhatsApp.</p>
             <div class="pix-key-display">
-                <span id="pixKey">SUA_CHAVE_PIX_AQUI</span> <button onclick="copyPixKey()">Copiar PIX</button>
+                <span id="pixKey"></span> <button onclick="copyPixKey()">Copiar PIX</button>
             </div>
             <button class="proceed-to-whatsapp" onclick="proceedToWhatsAppAfterPix()">Prosseguir para o WhatsApp</button>
         </div>
@@ -377,11 +377,13 @@
     <script>
         const GOOGLE_SHEETS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbyT5Lr_LdJzF7IvaNWuQb9pTpGkCjRio0bf5ZrBbJEXmHvdJvrjHBdvcDoYOXsXevl7/exec';
         
-        const PIX_KEY = "sua_chave_pix_aqui_exemplo@email.com"; 
+        // <<< DEFINA SUA CHAVE PIX REAL AQUI >>>
+        const PIX_KEY = "15998627702"; // Chave PIX atualizada
+        // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
         
         let products = [];
         let cart = {};
-        let whatsappNumber = "5511947406124"; 
+        let whatsappNumber = "5515998627702"; // Número de WhatsApp atualizado
 
         const welcomeMessage = document.querySelector('.welcome-message');
         const SCROLL_THRESHOLD = 80; 
@@ -625,7 +627,7 @@
             }
 
             orderMessage += `\nTotal do Pedido: R$ ${totalOrder.toFixed(2).replace('.', ',')}`;
-            // Adicionado a frase sobre o PIX do ponto de vista de quem está comprando
+            // Mensagem atualizada para o fornecedor
             orderMessage += `\n\nEstou realizando o pagamento via PIX e em breve enviarei o comprovante!`; 
 
             const encodedMessage = encodeURIComponent(orderMessage);
