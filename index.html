@@ -203,12 +203,109 @@
             font-size: 0.9em;
         }
 
-        /* NOVO ESTILO PARA A ÁREA DE ROLAGEM */
+        /* Área de rolagem para a lista de produtos */
         .scrollable-product-area {
             flex-grow: 1; /* Permite que essa área ocupe o espaço restante */
             overflow-y: auto; /* Adiciona rolagem vertical quando o conteúdo excede */
             padding-right: 10px; /* Para evitar que o texto fique colado na barra de rolagem */
             margin-bottom: 20px; /* Espaço entre a lista e o carrinho */
+        }
+
+        /* Estilos para o Modal PIX */
+        .modal {
+            display: none; /* Escondido por padrão */
+            position: fixed; /* Fica no lugar */
+            z-index: 10; /* Fica acima de tudo */
+            left: 0;
+            top: 0;
+            width: 100%; /* Largura total */
+            height: 100%; /* Altura total */
+            overflow: auto; /* Permite rolagem se o conteúdo for muito grande */
+            background-color: rgba(0,0,0,0.4); /* Fundo escuro semi-transparente */
+            display: flex; /* Usa flexbox para centralizar */
+            justify-content: center; /* Centraliza horizontalmente */
+            align-items: center; /* Centraliza verticalmente */
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: auto;
+            padding: 25px;
+            border: 1px solid #888;
+            width: 90%;
+            max-width: 500px; /* Largura máxima para o modal */
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            position: relative;
+            text-align: center;
+        }
+
+        .close-button {
+            color: #aaa;
+            font-size: 28px;
+            font-weight: bold;
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            cursor: pointer;
+        }
+
+        .close-button:hover,
+        .close-button:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .pix-key-display {
+            background-color: #e9ecef;
+            padding: 10px;
+            margin: 15px 0;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap; /* Permite quebrar linha em telas menores */
+        }
+
+        .pix-key-display span {
+            font-weight: bold;
+            color: #333;
+            flex-grow: 1; /* Permite que a chave ocupe o espaço */
+            text-align: left;
+            word-break: break-all; /* Quebra a palavra para chaves longas */
+        }
+
+        .pix-key-display button {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9em;
+            flex-shrink: 0; /* Impede o botão de encolher */
+        }
+
+        .pix-key-display button:hover {
+            background-color: #0056b3;
+        }
+
+        .proceed-to-whatsapp {
+            background-color: #28a745;
+            color: #fff;
+            border: none;
+            padding: 12px 20px;
+            font-size: 1.1em;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .proceed-to-whatsapp:hover {
+            background-color: #218838;
         }
     </style>
 </head>
@@ -245,14 +342,31 @@
             <ul class="cart-items-summary" id="cartItemsSummary">
                 </ul>
             <div class="cart-total" id="cartTotal">Total: R$ 0,00</div>
-            <button class="whatsapp-button" onclick="sendOrderViaWhatsApp()">
+            <button class="whatsapp-button" onclick="showPixModal()">
                 <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp Icon" style="width: 24px; height: 24px;"> Enviar Pedido via WhatsApp
             </button>
         </div>
     </div>
 
+    <div id="pixModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="closePixModal()">&times;</span>
+            <h2>Pagamento PIX</h2>
+            <p>Por favor, realize o pagamento via PIX. Copie a chave abaixo e envie o comprovante no WhatsApp.</p>
+            <div class="pix-key-display">
+                <span id="pixKey">SUA_CHAVE_PIX_AQUI</span> <button onclick="copyPixKey()">Copiar PIX</button>
+            </div>
+            <button class="proceed-to-whatsapp" onclick="proceedToWhatsAppAfterPix()">Prosseguir para o WhatsApp</button>
+        </div>
+    </div>
+
     <script>
+        // <<<<<<< URL DO SEU WEB APP DO GOOGLE APPS SCRIPT >>>>>>>
         const GOOGLE_SHEETS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbyT5Lr_LdJzF7IvaNWuQb9pTpGkCjRio0bf5ZrBbJEXmHvdJvrjHBdvcDoYOXsXevl7/exec';
+        
+        // <<< DEFINA SUA CHAVE PIX REAL AQUI >>>
+        const PIX_KEY = "sua_chave_pix_aqui_exemplo@email.com"; // Exemplo: 123.456.789-00 ou seuemail@email.com
+        // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
         
         let products = [];
         let cart = {};
@@ -260,10 +374,10 @@
 
         document.addEventListener('DOMContentLoaded', async () => {
             await loadProductsFromSheet(); 
-            // Aplica a ordenação padrão (Nome A-Z) após carregar os produtos
             sortProducts('name-asc'); 
-            // O renderProducts() já é chamado dentro do sortProducts()
             updateCartSummary();
+            // Preenche a chave PIX no modal quando a página carrega
+            document.getElementById('pixKey').textContent = PIX_KEY; 
         });
 
         async function loadProductsFromSheet() {
@@ -406,25 +520,60 @@
             cartSummary.style.display = cartSummary.style.display === 'none' ? 'block' : 'none';
         }
 
-        function sendOrderViaWhatsApp() {
+        // --- Novas Funções para o Modal PIX ---
+        function showPixModal() {
+            const totalOrder = calculateTotalOrder(); 
+            if (totalOrder === 0) {
+                alert("Seu carrinho está vazio. Adicione itens antes de enviar o pedido.");
+                return;
+            }
+            document.getElementById('pixModal').style.display = 'flex'; // Exibe o modal (usando flex para centralizar)
+        }
+
+        function closePixModal() {
+            document.getElementById('pixModal').style.display = 'none';
+        }
+
+        function copyPixKey() {
+            navigator.clipboard.writeText(PIX_KEY).then(() => {
+                alert("Chave PIX copiada para a área de transferência!");
+            }).catch(err => {
+                console.error('Erro ao copiar a chave PIX: ', err);
+                prompt("Por favor, copie manualmente a chave PIX:", PIX_KEY);
+            });
+        }
+
+        function proceedToWhatsAppAfterPix() {
+            closePixModal(); // Fecha o modal
+            sendOrderViaWhatsApp(); // Prossegue com o envio do pedido para o WhatsApp
+        }
+
+        // Helper function para calcular o total do pedido (reutilizável)
+        function calculateTotalOrder() {
+            let total = 0;
+            for (const productId in cart) {
+                const item = cart[productId];
+                if (item.quantity > 0) {
+                    total += item.quantity * item.price;
+                }
+            }
+            return total;
+        }
+
+        function sendOrderViaWhatsApp() { // Esta função é agora chamada por proceedToWhatsAppAfterPix()
             let orderMessage = "Olá! Gostaria de fazer o seguinte pedido:\n\n";
-            let totalOrder = 0;
+            let totalOrder = calculateTotalOrder(); 
 
             for (const productId in cart) {
                 const item = cart[productId];
                 if (item.quantity > 0) {
                     const itemTotal = item.quantity * item.price;
                     orderMessage += `${item.name} - ${item.quantity}x - R$ ${itemTotal.toFixed(2).replace('.', ',')}\n`;
-                    totalOrder += itemTotal;
                 }
             }
 
-            if (totalOrder === 0) {
-                alert("Seu carrinho está vazio. Adicione itens antes de enviar o pedido.");
-                return;
-            }
-
             orderMessage += `\nTotal do Pedido: R$ ${totalOrder.toFixed(2).replace('.', ',')}`;
+            orderMessage += `\n\n*Atenção:* O pagamento via PIX já foi informado. Por favor, envie o comprovante!`; // Adiciona nota sobre PIX
 
             const encodedMessage = encodeURIComponent(orderMessage);
             const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodedMessage}`;
@@ -433,7 +582,7 @@
             cart = {};
             renderProducts();
             updateCartSummary();
-            alert("Seu pedido foi enviado para o WhatsApp!");
+            alert("Seu pedido foi enviado para o WhatsApp! Não esqueça de enviar o comprovante PIX.");
         }
     </script>
 </body>
