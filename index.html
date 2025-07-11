@@ -123,9 +123,9 @@
 
         async function saveProductsToSheet() {
             try {
+                // REMOVIDO: mode: 'no-cors'
                 const response = await fetch(GOOGLE_SHEETS_WEB_APP_URL, {
                     method: 'POST',
-                    mode: 'no-cors', // Necessário para evitar erro CORS no front-end, mas Apps Script precisa do setVastForServiceRequest(true)
                     cache: 'no-cache',
                     headers: {
                         'Content-Type': 'application/json'
@@ -133,19 +133,24 @@
                     body: JSON.stringify({ action: 'saveItems', data: products })
                 });
 
-                // No-cors mode não permite ler a resposta, então confiaremos no status 200 implícito ou erros de rede
-                console.log("Solicitação de salvamento enviada ao Google Sheets.");
-                alert("Itens salvos na planilha Google Sheets!"); // Avisamos o usuário
-                // O ideal aqui seria ter uma resposta do Apps Script para confirmar
-                // Mas com 'no-cors', isso não é possível.
-                // Se a requisição HTTP for bem-sucedida, assumimos que o Apps Script funcionou.
+                // Tenta ler a resposta para pegar o status e mensagem do Apps Script
+                if (!response.ok) {
+                    const errorResponse = await response.json().catch(() => ({ message: 'Erro desconhecido ao salvar produtos (sem JSON de erro).' }));
+                    throw new Error(`Erro de rede ou Apps Script: ${response.status} ${response.statusText}. Detalhes: ${errorResponse.message || 'Nenhum detalhe adicional.'}`);
+                }
+                const result = await response.json(); // Lê a resposta JSON do Apps Script
 
-                // Depois de salvar, recarregamos os produtos para ter certeza que os IDs e dados estão sincronizados,
-                // especialmente se o Apps Script estiver gerando IDs ou processando dados.
-                await loadProductsFromSheet();
-                renderProducts(); // Re-renderiza a lista de produtos
-                updateCartSummary(); // Atualiza o carrinho em caso de mudança de preço
-                renderAdminItems(); // Re-renderiza a área de admin
+                if (result.status === 'success') {
+                    console.log("Itens salvos com sucesso no Google Sheets:", result.message);
+                    alert("Itens salvos na planilha Google Sheets!");
+                } else {
+                    throw new Error(result.message || 'Erro desconhecido ao salvar itens.');
+                }
+                
+                await loadProductsFromSheet(); // Recarrega os produtos para ter certeza dos dados mais recentes
+                renderProducts(); 
+                updateCartSummary(); 
+                renderAdminItems(); 
             } catch (error) {
                 console.error("Falha ao salvar produtos no Google Sheets:", error);
                 alert("Erro ao salvar itens na planilha. Verifique o console para detalhes: " + error.message);
@@ -154,9 +159,9 @@
 
         async function deleteItemFromSheet(id) {
             try {
+                // REMOVIDO: mode: 'no-cors'
                 const response = await fetch(GOOGLE_SHEETS_WEB_APP_URL, {
                     method: 'POST',
-                    mode: 'no-cors',
                     cache: 'no-cache',
                     headers: {
                         'Content-Type': 'application/json'
@@ -164,8 +169,20 @@
                     body: JSON.stringify({ action: 'deleteItem', data: { id: id } })
                 });
 
-                console.log(`Solicitação de exclusão para ID ${id} enviada.`);
-                // Após a exclusão, recarregamos a lista para ter certeza de que está sincronizada
+                // Tenta ler a resposta para pegar o status e mensagem do Apps Script
+                if (!response.ok) {
+                    const errorResponse = await response.json().catch(() => ({ message: 'Erro desconhecido ao excluir produto (sem JSON de erro).' }));
+                    throw new Error(`Erro de rede ou Apps Script: ${response.status} ${response.statusText}. Detalhes: ${errorResponse.message || 'Nenhum detalhe adicional.'}`);
+                }
+                const result = await response.json(); // Lê a resposta JSON do Apps Script
+
+                if (result.status === 'success') {
+                    console.log(`Item com ID ${id} deletado do Google Sheets:`, result.message);
+                    alert(`Item '${id}' excluído da planilha!`);
+                } else {
+                    throw new Error(result.message || `Erro desconhecido ao excluir item com ID ${id}.`);
+                }
+
                 await loadProductsFromSheet();
                 renderAdminItems();
                 renderProducts();
