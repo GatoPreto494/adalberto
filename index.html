@@ -22,7 +22,7 @@
             border-radius: 8px;
             display: flex;
             flex-direction: column;
-            height: calc(100vh - 40px);
+            height: calc(100vh - 40px); /* Altura total da tela menos margem */
             overflow: hidden;
         }
         header {
@@ -34,18 +34,10 @@
             margin-bottom: 20px;
             flex-shrink: 0;
         }
-        /* NOVO: Wrapper para o título e o botão de compartilhar */
-        .header-left-content {
-            display: flex;
-            align-items: center;
-            flex-grow: 1; /* Permite que este grupo ocupe o espaço restante */
-            min-width: 0; /* Permite encolher se a tela for muito pequena */
-        }
         h1 {
             color: #007bff;
             margin: 0;
-            /* REMOVIDO: flex-grow: 1 daqui, agora está no .header-left-content */
-            flex-shrink: 0; /* Impede o h1 de encolher além do necessário */
+            flex-grow: 1;
         }
         .cart-icon {
             font-size: 24px;
@@ -111,7 +103,7 @@
             border: none;
             padding: 5px 10px;
             cursor: pointer;
-            border-radius: 44px;
+            border-radius: 4px;
             font-size: 1em;
             margin: 0 5px;
         }
@@ -342,7 +334,7 @@
             border-radius: 5px;
             cursor: pointer;
             font-size: 0.9em;
-            margin-left: 20px; /* Espaço entre o h1 e o botão */
+            margin-left: 20px;
             flex-shrink: 0;
         }
         .share-button:hover {
@@ -407,7 +399,8 @@
 <body>
     <div class="container">
         <header>
-            <div class="header-left-content"> <h1>Faça seu Pedido</h1>
+            <div class="header-left-content">
+                <h1>Faça seu Pedido</h1>
                 <button class="share-button" onclick="showShareOptionsModal()">Compartilhar Tabela</button>
             </div>
             <div class="cart-icon" onclick="toggleCartSummary()">
@@ -492,6 +485,9 @@
         let cart = {};
         let whatsappNumber = "5515998627702"; 
 
+        // NOVO: Variável para armazenar o link do grupo carregado do localStorage
+        let storedGroupLink = '';
+
         const welcomeMessage = document.querySelector('.welcome-message');
         const SCROLL_THRESHOLD = 80; 
         let isWelcomeMessageHidden = false; 
@@ -525,6 +521,12 @@
             sortProducts('name-asc'); 
             updateCartSummary();
             document.getElementById('pixKey').textContent = PIX_KEY; 
+
+            // Carrega o link do grupo do localStorage ao carregar a página
+            const loadedGroupLink = localStorage.getItem('groupLink');
+            if (loadedGroupLink) {
+                storedGroupLink = loadedGroupLink;
+            }
         });
 
         async function loadProductsFromSheet() {
@@ -604,9 +606,9 @@
 
             if (change === 1) { // Botão de MAIS
                 if (currentQty === 0) {
-                    cart[productId].quantity = 10; // De 0, vai para 10
+                    cart[productId].quantity = 10; 
                 } else {
-                    cart[productId].quantity += 1; // Incrementa de 1 em 1
+                    cart[productId].quantity += 1; 
                 }
             } else if (change === -1) { // Botão de MENOS
                 if (currentQty <= 10 && currentQty > 0) { 
@@ -746,11 +748,19 @@
 
         function showShareOptionsModal() {
             document.getElementById('shareOptionsModal').style.display = 'flex'; 
+            // Preenche o input do grupo com o link salvo ao abrir o modal
+            document.getElementById('groupLinkInput').value = storedGroupLink; 
+            document.getElementById('contactNumberInput').value = ''; // Limpa o campo de contato
         }
 
         function closeShareOptionsModal() {
             document.getElementById('shareOptionsModal').style.display = 'none'; 
-            document.getElementById('groupLinkInput').value = ''; 
+            // Salva o valor atual do input do grupo no localStorage ao fechar o modal
+            localStorage.setItem('groupLink', document.getElementById('groupLinkInput').value);
+            // E atualiza a variável em memória
+            storedGroupLink = document.getElementById('groupLinkInput').value;
+
+            document.getElementById('groupLinkInput').value = ''; // Limpa o campo para a próxima vez que for aberto
             document.getElementById('contactNumberInput').value = ''; 
         }
 
@@ -774,6 +784,10 @@
                 alert("Por favor, cole o link do grupo.");
                 return;
             }
+
+            // Salva o link no localStorage imediatamente ao enviar
+            localStorage.setItem('groupLink', groupLink);
+            storedGroupLink = groupLink; // Atualiza a variável em memória
 
             const fullMessage = generateProductTableMessage();
 
