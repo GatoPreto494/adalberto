@@ -37,11 +37,13 @@
         h1 {
             color: #007bff;
             margin: 0;
+            flex-grow: 1;
         }
         .cart-icon {
             font-size: 24px;
             cursor: pointer;
             position: relative;
+            flex-shrink: 0;
         }
         .cart-count {
             background-color: #dc3545;
@@ -226,7 +228,7 @@
             margin-bottom: 20px;
         }
 
-        /* Estilos para o Modal PIX */
+        /* Estilos para o Modal (geral) */
         .modal {
             display: none;
             position: fixed;
@@ -237,6 +239,7 @@
             height: 100%;
             overflow: auto;
             background-color: rgba(0,0,0,0.4);
+            display: flex;
             justify-content: center;
             align-items: center;
         }
@@ -271,6 +274,7 @@
             cursor: pointer;
         }
 
+        /* Estilos específicos para o Modal PIX */
         .pix-key-display {
             background-color: #e9ecef;
             padding: 10px;
@@ -321,12 +325,83 @@
         .proceed-to-whatsapp:hover {
             background-color: #218838;
         }
+
+        /* Estilos para o botão Compartilhar Tabela */
+        .share-button {
+            background-color: #17a2b8;
+            color: #fff;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9em;
+            margin-left: 20px;
+            flex-shrink: 0;
+        }
+        .share-button:hover {
+            background-color: #138496;
+        }
+
+        /* Estilos específicos para o Modal de Opções de Compartilhamento */
+        .share-option-section {
+            background-color: #f0f8ff;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            border: 1px solid #cce5ff;
+            text-align: left; /* Alinha o texto das opções à esquerda */
+        }
+        .share-option-section h3 {
+            margin-top: 0;
+            color: #007bff;
+        }
+        .share-option-section p {
+            margin-bottom: 10px;
+            font-size: 0.95em;
+        }
+        .share-option-section input[type="text"] {
+            width: calc(100% - 22px);
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box; /* Inclui padding e border na largura */
+        }
+        .share-option-section button {
+            background-color: #28a745;
+            color: #fff;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            width: 100%;
+            box-sizing: border-box; /* Inclui padding e border na largura */
+        }
+        .share-option-section button:hover {
+            background-color: #218838;
+        }
+        .cancel-share-button {
+            background-color: #6c757d;
+            color: #fff;
+            border: none;
+            padding: 12px 20px;
+            font-size: 1em;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 15px;
+        }
+        .cancel-share-button:hover {
+            background-color: #5a6268;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
             <h1>Faça seu Pedido</h1>
+            <button class="share-button" onclick="showShareOptionsModal()">Compartilhar Tabela</button> 
             <div class="cart-icon" onclick="toggleCartSummary()">
                 🛒 <span class="cart-count" id="cartCount">0</span>
             </div>
@@ -368,22 +443,46 @@
             <h2>Pagamento PIX</h2>
             <p>Por favor, realize o pagamento via PIX. Copie a chave abaixo e envie o comprovante no WhatsApp.</p>
             <div class="pix-key-display">
-                <span id="pixKey"></span> <button onclick="copyPixKey()">Copiar PIX</button>
+                <span id="pixKey"></span>
+                <button onclick="copyPixKey()">Copiar PIX</button>
             </div>
             <button class="proceed-to-whatsapp" onclick="proceedToWhatsAppAfterPix()">Prosseguir para o WhatsApp</button>
         </div>
     </div>
 
+    <div id="shareOptionsModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="closeShareOptionsModal()">&times;</span>
+            <h2>Compartilhar Tabela de Produtos</h2>
+            <p>Escolha como deseja compartilhar a lista de produtos:</p>
+            
+            <div class="share-option-section">
+                <h3>Enviar para um Grupo</h3>
+                <p>Cole o link do grupo do WhatsApp:</p>
+                <input type="text" id="groupLinkInput" placeholder="Ex: https://chat.whatsapp.com/...">
+                <button onclick="sendToGroup()">Enviar para o Grupo</button>
+            </div>
+
+            <div class="share-option-section">
+                <h3>Enviar para um Contato</h3>
+                <p>Digite o número de telefone (com DDI e DDD):</p>
+                <input type="text" id="contactNumberInput" placeholder="Ex: 5515998627702">
+                <button onclick="sendToContact()">Enviar para o Contato</button>
+            </div>
+
+            <button class="cancel-share-button" onclick="closeShareOptionsModal()">Cancelar</button>
+        </div>
+    </div>
+
+
     <script>
         const GOOGLE_SHEETS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbyT5Lr_LdJzF7IvaNWuQb9pTpGkCjRio0bf5ZrBbJEXmHvdJvrjHBdvcDoYOXsXevl7/exec';
         
-        // <<< DEFINA SUA CHAVE PIX REAL AQUI >>>
-        const PIX_KEY = "15998627702"; // Chave PIX atualizada
-        // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+        const PIX_KEY = "15998627702"; 
         
         let products = [];
         let cart = {};
-        let whatsappNumber = "5515998627702"; // Número de WhatsApp atualizado
+        let whatsappNumber = "5515998627702"; 
 
         const welcomeMessage = document.querySelector('.welcome-message');
         const SCROLL_THRESHOLD = 80; 
@@ -521,11 +620,9 @@
             const product = products.find(p => p.id === productId);
             if (!product) return;
 
-            // Se o valor digitado não é um número ou é menor que 0, força para 0
             if (isNaN(quantity) || quantity < 0) { 
                 quantity = 0;
             } else if (quantity > 0 && quantity < 10) { 
-                // Se digitou entre 1 e 9, força para 10
                 quantity = 10;
             }
 
@@ -608,7 +705,8 @@
             for (const productId in cart) {
                 const item = cart[productId];
                 if (item.quantity > 0) {
-                    total += item.quantity * item.price;
+                    const itemTotal = item.quantity * item.price;
+                    total += itemTotal;
                 }
             }
             return total;
@@ -627,7 +725,6 @@
             }
 
             orderMessage += `\nTotal do Pedido: R$ ${totalOrder.toFixed(2).replace('.', ',')}`;
-            // Mensagem atualizada para o fornecedor
             orderMessage += `\n\nEstou realizando o pagamento via PIX e em breve enviarei o comprovante!`; 
 
             const encodedMessage = encodeURIComponent(orderMessage);
@@ -638,6 +735,81 @@
             renderProducts();
             updateCartSummary();
             alert("Seu pedido foi enviado para o WhatsApp!"); 
+        }
+
+        // NOVO: Função para mostrar o modal de opções de compartilhamento
+        function showShareOptionsModal() {
+            document.getElementById('shareOptionsModal').style.display = 'flex';
+        }
+
+        // NOVO: Função para fechar o modal de opções de compartilhamento
+        function closeShareOptionsModal() {
+            document.getElementById('shareOptionsModal').style.display = 'none';
+            // Opcional: Limpar os campos do input ao fechar o modal
+            document.getElementById('groupLinkInput').value = '';
+            document.getElementById('contactNumberInput').value = '';
+        }
+
+        // NOVO: Gera a mensagem da tabela de produtos
+        function generateProductTableMessage() {
+            const pageUrl = window.location.href;
+            let tableText = "Confira nossos produtos e valores:\n\n";
+
+            products.forEach(product => {
+                tableText += `${product.name} - R$ ${product.price.toFixed(2).replace('.', ',')}\n`;
+                if (product.description && product.description.trim() !== '') {
+                    tableText += `  (${product.description})\n`; 
+                }
+            });
+
+            // O link é colocado ABAIXO do texto da tabela, como solicitado
+            return `${tableText}\n\nConheça mais e faça seu pedido aqui:\n${pageUrl}`;
+        }
+
+        // NOVO: Envia a tabela para um grupo
+        function sendToGroup() {
+            const groupLink = document.getElementById('groupLinkInput').value;
+            if (!groupLink) {
+                alert("Por favor, cole o link do grupo.");
+                return;
+            }
+
+            const fullMessage = generateProductTableMessage();
+
+            // Para grupos, é mais comum copiar a mensagem e pedir para o usuário colar,
+            // pois o pré-preenchimento de texto em links de grupo é limitado pelo WhatsApp.
+            navigator.clipboard.writeText(fullMessage).then(() => {
+                closeShareOptionsModal();
+                alert("Mensagem da tabela copiada! Agora, abra o link do grupo e cole a mensagem.");
+                window.open(groupLink, '_blank'); // Abre o link do grupo
+            }).catch(err => {
+                console.error('Erro ao copiar a mensagem para o grupo: ', err);
+                alert("Erro ao copiar a mensagem. Por favor, copie-a manualmente e abra o link do grupo para colar.");
+                closeShareOptionsModal();
+                window.open(groupLink, '_blank'); // Abre o link mesmo com erro de cópia
+            });
+        }
+
+        // NOVO: Envia a tabela para um contato específico
+        function sendToContact() {
+            const contactNumber = document.getElementById('contactNumberInput').value;
+            if (!contactNumber) {
+                alert("Por favor, digite o número do contato (com DDI e DDD).");
+                return;
+            }
+
+            // Validação básica do número (apenas dígitos)
+            if (!/^\d+$/.test(contactNumber)) {
+                alert("O número de contato deve conter apenas dígitos (Ex: 5515998627702).");
+                return;
+            }
+
+            const fullMessage = generateProductTableMessage();
+            const encodedMessage = encodeURIComponent(fullMessage);
+            const whatsappUrl = `https://wa.me/${contactNumber}?text=${encodedMessage}`;
+
+            closeShareOptionsModal();
+            window.open(whatsappUrl, '_blank');
         }
     </script>
 </body>
