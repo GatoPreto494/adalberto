@@ -230,7 +230,7 @@
 
         /* Estilos para o Modal (geral) */
         .modal {
-            display: none; /* CORRIGIDO: Oculto por padrão para não aparecer ao carregar a página */
+            display: none; /* CORRIGIDO: Oculto por padrão */
             position: fixed;
             z-index: 10;
             left: 0;
@@ -239,9 +239,9 @@
             height: 100%;
             overflow: auto;
             background-color: rgba(0,0,0,0.4);
-            display: flex;
             justify-content: center;
             align-items: center;
+            /* display: flex; REMOVIDO daqui para que o JS controle */
         }
 
         .modal-content {
@@ -736,19 +736,16 @@
             alert("Seu pedido foi enviado para o WhatsApp!"); 
         }
 
-        // Função para mostrar o modal de opções de compartilhamento
         function showShareOptionsModal() {
-            document.getElementById('shareOptionsModal').style.display = 'flex'; // Torna o modal visível
+            document.getElementById('shareOptionsModal').style.display = 'flex'; 
         }
 
-        // Função para fechar o modal de opções de compartilhamento
         function closeShareOptionsModal() {
-            document.getElementById('shareOptionsModal').style.display = 'none'; // Oculta o modal
-            document.getElementById('groupLinkInput').value = ''; // Limpa o campo
-            document.getElementById('contactNumberInput').value = ''; // Limpa o campo
+            document.getElementById('shareOptionsModal').style.display = 'none'; 
+            document.getElementById('groupLinkInput').value = ''; 
+            document.getElementById('contactNumberInput').value = ''; 
         }
 
-        // Gera a mensagem da tabela de produtos
         function generateProductTableMessage() {
             const pageUrl = window.location.href;
             let tableText = "Confira nossos produtos e valores:\n\n";
@@ -763,7 +760,6 @@
             return `${tableText}\n\nConheça mais e faça seu pedido aqui:\n${pageUrl}`;
         }
 
-        // Envia a tabela para um grupo
         function sendToGroup() {
             const groupLink = document.getElementById('groupLinkInput').value;
             if (!groupLink) {
@@ -785,7 +781,6 @@
             });
         }
 
-        // Envia a tabela para um contato específico
         function sendToContact() {
             let contactNumber = document.getElementById('contactNumberInput').value;
             if (!contactNumber) {
@@ -793,16 +788,13 @@
                 return;
             }
 
-            // Remove caracteres não numéricos
             contactNumber = contactNumber.replace(/\D/g, '');
 
-            // Adiciona o DDI 55 se não estiver presente e tiver 10 ou 11 dígitos (DDD + Número)
-            if (contactNumber.length === 10 || contactNumber.length === 11) { // Ex: 15998627702 ou 1598627702
-                if (!contactNumber.startsWith('55')) {
+            if (contactNumber.length === 10 || contactNumber.length === 11) { // Se tem 10 ou 11 dígitos (DDD + Número)
+                if (!contactNumber.startsWith('55')) { // Se não começa com 55, adiciona
                     contactNumber = '55' + contactNumber;
                 }
             } else if (!contactNumber.startsWith('55') && contactNumber.length > 0) {
-                 // Se digitou um número maior que 11 dígitos e não começa com 55, avisa
                  alert("O número parece estar incompleto ou incorreto. Certifique-se de incluir o DDD. Se for outro país, inclua o DDI completo (Ex: 12123456789).");
                  return;
             }
