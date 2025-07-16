@@ -22,22 +22,30 @@
             border-radius: 8px;
             display: flex;
             flex-direction: column;
-            height: calc(100vh - 40px); /* Altura total da tela menos margem */
+            height: calc(100vh - 40px);
             overflow: hidden;
         }
         header {
             display: flex;
-            justify-content: space-between; /* Distribui itens ao longo do eixo principal */
+            justify-content: space-between;
             align-items: center;
             padding-bottom: 15px;
             border-bottom: 1px solid #eee;
             margin-bottom: 20px;
             flex-shrink: 0;
         }
+        /* NOVO: Wrapper para o título e o botão de compartilhar */
+        .header-left-content {
+            display: flex;
+            align-items: center;
+            flex-grow: 1; /* Permite que este grupo ocupe o espaço restante */
+            min-width: 0; /* Permite encolher se a tela for muito pequena */
+        }
         h1 {
             color: #007bff;
             margin: 0;
-            flex-grow: 1;
+            /* REMOVIDO: flex-grow: 1 daqui, agora está no .header-left-content */
+            flex-shrink: 0; /* Impede o h1 de encolher além do necessário */
         }
         .cart-icon {
             font-size: 24px;
@@ -103,7 +111,7 @@
             border: none;
             padding: 5px 10px;
             cursor: pointer;
-            border-radius: 4px;
+            border-radius: 44px;
             font-size: 1em;
             margin: 0 5px;
         }
@@ -230,7 +238,7 @@
 
         /* Estilos para o Modal (geral) */
         .modal {
-            display: none; /* CORRIGIDO: Oculto por padrão */
+            display: none;
             position: fixed;
             z-index: 10;
             left: 0;
@@ -241,7 +249,6 @@
             background-color: rgba(0,0,0,0.4);
             justify-content: center;
             align-items: center;
-            /* display: flex; REMOVIDO daqui para que o JS controle */
         }
 
         .modal-content {
@@ -335,7 +342,7 @@
             border-radius: 5px;
             cursor: pointer;
             font-size: 0.9em;
-            margin-left: 20px;
+            margin-left: 20px; /* Espaço entre o h1 e o botão */
             flex-shrink: 0;
         }
         .share-button:hover {
@@ -400,8 +407,9 @@
 <body>
     <div class="container">
         <header>
-            <h1>Faça seu Pedido</h1>
-            <button class="share-button" onclick="showShareOptionsModal()">Compartilhar Tabela</button> 
+            <div class="header-left-content"> <h1>Faça seu Pedido</h1>
+                <button class="share-button" onclick="showShareOptionsModal()">Compartilhar Tabela</button>
+            </div>
             <div class="cart-icon" onclick="toggleCartSummary()">
                 🛒 <span class="cart-count" id="cartCount">0</span>
             </div>
@@ -790,8 +798,8 @@
 
             contactNumber = contactNumber.replace(/\D/g, '');
 
-            if (contactNumber.length === 10 || contactNumber.length === 11) { // Se tem 10 ou 11 dígitos (DDD + Número)
-                if (!contactNumber.startsWith('55')) { // Se não começa com 55, adiciona
+            if (contactNumber.length === 10 || contactNumber.length === 11) { 
+                if (!contactNumber.startsWith('55')) { 
                     contactNumber = '55' + contactNumber;
                 }
             } else if (!contactNumber.startsWith('55') && contactNumber.length > 0) {
